@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bptd43rjyxvgc"]
+
+[ext_resource type="Script" path="res://SadChromaLib/Tests/SCHRandomUtilsTest.cs" id="1_oou05"]
+
+[node name="SCNT_RandomUtils" type="Node"]
+script = ExtResource("1_oou05")
