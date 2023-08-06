@@ -3,7 +3,7 @@ using Godot;
 namespace SadChromaLib.AI.States;
 
 /// <summary> An object that handles processing through states. Sub-classing allows for fully customising how states are handled. </summary>
-public partial class StateMachine : RefCounted
+public sealed partial class StateMachine : RefCounted
 {
     public delegate void StateMachineDelegate(State state);
     public delegate void StateClearedDelegate();
@@ -17,10 +17,14 @@ public partial class StateMachine : RefCounted
     /// <summary> This event is called when the state machine transitions to a null state. </summary>
     public StateClearedDelegate onStateClear;
 
-    protected State _currentState;
+    private State _currentState;
     private Node _owner;
 
-    public StateMachine(Node owner, StateMachineDelegate configurationHandler = null, StateMachineDelegate completionHandler = null, StateMachineDelegate transitionHandler = null)
+    public StateMachine(
+        Node owner,
+        StateMachineDelegate configurationHandler = null,
+        StateMachineDelegate completionHandler = null,
+        StateMachineDelegate transitionHandler = null)
     {
         _owner = owner;
 

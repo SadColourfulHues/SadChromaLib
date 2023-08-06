@@ -3,7 +3,7 @@ using Godot;
 namespace SadChromaLib.Animation;
 
 /// <summary> A utility object that applies simple forces to a body. </summary>
-public partial class SimpleForce3D : RefCounted
+public sealed partial class SimpleForce3D : RefCounted
 {
 	private bool _isActive;
 	private float _timeActive;
@@ -53,14 +53,14 @@ public partial class SimpleForce3D : RefCounted
 	#region State Methods
 
 	/// <summary> Abruptly removes all forces acting on a body. </summary>
-	public virtual void ClearForces()
+	public void ClearForces()
 	{
 		_forces = Vector3.Zero;
 		_isActive = false;
 	}
 
 	/// <summary> Adds a force of a given direction and magnitude to a body. </summary>
-	public virtual void AddForce(Vector3 force)
+	public void AddForce(Vector3 force)
 	{
 		_forces += force;
 		_isActive = true;

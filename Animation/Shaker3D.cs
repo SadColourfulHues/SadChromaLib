@@ -1,42 +1,41 @@
 using Godot;
-using System;
 
 using SadChromaLib.Utils.Random;
 
 namespace SadChromaLib.Animation;
 
 /// <summary> A utility object that can generate 'shaking' of varying intensities. </summary>
-public partial class Shaker : RefCounted
+public sealed partial class Shaker3D : RefCounted
 {
-	protected ShakerType _type;
-	protected ShakerMethod _method;
+	private ShakerType _type;
+	private ShakerMethod _method;
 
-	protected Node3D _target;
-	protected Vector3 _originalOffset;
-	protected Vector3 _originalRotation;
+	private Node3D _target;
+	private Vector3 _originalOffset;
+	private Vector3 _originalRotation;
 
-	protected float _shakeMax = 1.0f;
-	protected float _shakeRotationScale = 0.05f;
-	protected float _shakeDecaySpeed = 0.9f;
-	protected float _shakeIntensity = 0.0f;
-	protected float _shakeAmount = 0.0f;
-	protected float _noiseTime = 0.0f;
-	protected float _time = 1.0f;
+	private float _shakeMax = 1.0f;
+	private float _shakeRotationScale = 0.05f;
+	private float _shakeDecaySpeed = 0.9f;
+	private float _shakeIntensity = 0.0f;
+	private float _shakeAmount = 0.0f;
+	private float _noiseTime = 0.0f;
+	private float _time = 1.0f;
 
-	protected bool _affectPosX = true;
-	protected bool _affectPosY = false;
-	protected bool _affectPosZ = true;
+	private bool _affectPosX = true;
+	private bool _affectPosY = false;
+	private bool _affectPosZ = true;
 
-	protected bool _affectRotX = true;
-	protected bool _affectRotY = true;
-	protected bool _affectRotZ = false;
+	private bool _affectRotX = true;
+	private bool _affectRotY = true;
+	private bool _affectRotZ = false;
 
-	protected FastNoiseLite _noiseGenerator;
-	protected int _noiseId;
+	private FastNoiseLite _noiseGenerator;
+	private int _noiseId;
 
-	protected bool _isActive;
+	private bool _isActive;
 
-	public Shaker(Node3D target, float intensity = 1.0f, ShakerType type = ShakerType.Positional, ShakerMethod method = ShakerMethod.Random)
+	public Shaker3D(Node3D target, float intensity = 1.0f, ShakerType type = ShakerType.Positional, ShakerMethod method = ShakerMethod.Random)
 	{
 		SetMethod(method);
 		SetType(type);
@@ -217,13 +216,13 @@ public partial class Shaker : RefCounted
 	#region Helpers
 
 	/// <summary> Updates the shaker's noise id. </summary>
-	protected void UpdateNoiseId()
+	private void UpdateNoiseId()
 	{
 		_noiseId = RandomUtils.BasicInt() % 2048;
 	}
 
 	/// <summary> Generates displacement using the chosen shake method. (The parameter 'id' is only used by noise-based generators.) </summary>
-	protected float GenerateShake(int id)
+	private float GenerateShake(int id)
 	{
 		return _method switch {
 			ShakerMethod.Random => RandomUtils.Random(-1.0f, 1.0f),
@@ -233,7 +232,7 @@ public partial class Shaker : RefCounted
 	}
 
 	/// <summary> Applies the shaker's positional displacement to the target object. </summary>
-	protected void DisplacePosition(Vector3 displace, float blend)
+	private void DisplacePosition(Vector3 displace, float blend)
 	{
 		Vector3 position = _originalOffset;
 
@@ -250,7 +249,7 @@ public partial class Shaker : RefCounted
 	}
 
 	/// <summary> Applies the shaker's rotational displacement to the target object. </summary>
-	protected void DisplaceRotation(Vector3 displace, float blend)
+	private void DisplaceRotation(Vector3 displace, float blend)
 	{
 		Vector3 rotation = _originalRotation;
 
