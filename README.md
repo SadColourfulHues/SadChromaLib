@@ -14,3 +14,25 @@ SadChromaLib.Utils:
 
 SadChromaLib.Tests:
   -> A module implementing instances for testing SadChromaLib functionality.
+
+SadChromaLib.Persistence:
+  -> A module implementing data persistence support (saving/loading).
+
+----
+
+Specialisations:
+These submodules implements case-specific functionality that isn't required by every game.
+
+Inventory (SadChromaLib.Specialisations.Inventory):
+https://github.com/SadColourfulHues/Inventory
+  -> A submodule implementing inventory and crafting functionality.
+
+Entities (SadChromaLib.Specialisations.Entities):
+https://github.com/SadColourfulHues/Entities
+  -> A submodule implementing health and status effect functionality
+
+Dialogue (SadChromaLib.Specialisations.Dialogue):
+https://github.com/SadColourfulHues/Dialogue
+  -> A submodule implementing a custom dialogue script parser and graph-based dialogue playback.
+
+
