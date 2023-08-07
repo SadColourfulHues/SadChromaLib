@@ -35,4 +35,8 @@ These submodules implements case-specific functionality that isn't required by e
 #### (https://github.com/SadColourfulHues/Dialogue)
   -> A submodule implementing a custom dialogue script parser and graph-based dialogue playback.
 
+### Quests (SadChromaLib.Specialisations.Quests):
+#### (https://github.com/SadColourfulHues/Quests)
+  -> A submodule implementing a basic questing system.
+
 
