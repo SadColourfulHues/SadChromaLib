@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bx8x0ce6rxmib"]
 
-[ext_resource type="Script" path="res://SadChromaLib/Tests/SCHTimingTest.cs" id="1_b5tgn"]
+[ext_resource type="Script" path="res://SCHLib/SadChromaLib/Tests/SCHTimingTest.cs" id="1_b5tgn"]
 
 [node name="SCNT_Timing" type="Control"]
 layout_mode = 3
