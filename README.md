@@ -3,12 +3,6 @@ The super-module of SadChromaLib. It implements a variety of commonly-used featu
 
 ## Modules:
 
-### SadChromaLib.AI:
-  -> A module implementing AI components for in-game entities. It also features base classes for project-specific behaviour nodes and/or state machines.
-
-### SadChromaLib.Animation:
-  -> A module implementing procedural methods for animating in-game objects.
-
 ### SadChromaLib.Utils:
   -> A module implementing core types and helper classes for many SadChromaLib submodules.
 
@@ -17,6 +11,18 @@ The super-module of SadChromaLib. It implements a variety of commonly-used featu
 
 ### SadChromaLib.Tests:
   -> A module implementing instances for testing SadChromaLib functionality.
+
+----
+
+## Optional Modules:
+
+### SadChromaLib.AI:
+#### (https://github.com/SadColourfulHues/AI)
+  -> A module implementing AI components for in-game entities. It also features base classes for project-specific behaviour nodes and/or state machines.
+
+### SadChromaLib.Animation:
+#### (https://github.com/SadColourfulHues/Animation)
+  -> A module implementing procedural methods for animating in-game objects.
 
 ----
 
