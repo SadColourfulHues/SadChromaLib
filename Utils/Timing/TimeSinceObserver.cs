@@ -8,7 +8,7 @@ public sealed partial class TimeSinceObserver : RefCounted
     private ulong _startTime;
     private float _targetElapsedTime;
 
-    public TimeSinceObserver(float targetElapsedTime)
+    public TimeSinceObserver(float targetElapsedTime = 1.0f)
     {
         _targetElapsedTime = targetElapsedTime;
     }
