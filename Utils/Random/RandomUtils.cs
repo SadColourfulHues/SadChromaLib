@@ -175,36 +175,25 @@ public static class RandomUtils
 		return Random(0.0f, 1.0f, method) < probability;
 	}
 
-	/// <summary> Generates a 2D gaussian distribution based on the given parameters. </summary>
-	public static Vector2 Gaussian(float mean = 0.0f, float stddev = 1.0f, RandomMethod method = RandomMethod.Basic)
-	{
-		float theta = Mathf.Tau * Random(0.0f, 1.0f, method);
-		float rho = Mathf.Sqrt(-2.0f * Mathf.Log(1.0f - Random(0.0f, 1.0f, method)));
-		float scale = stddev * rho;
-
-		return new Vector2(
-			mean + (scale * Mathf.Cos(theta)),
-			mean + (scale * Mathf.Sin(theta))
-		);
-	}
-
-	/// <summary> Returns a random point in a circle. </summary>
-	public static Vector2 Circle(float radius = 1.0f, float mean = 0.0f, float stddev = 1.0f, RandomMethod method = RandomMethod.Basic)
-	{
-		return Gaussian(mean, stddev, method).Normalized() * radius;
-	}
-
 	/// <summary> Returns a random direction in 2D space. </summary>
-	public static Vector2 RandomDir()
+	public static Vector2 RandomDir2D(RandomMethod method = RandomMethod.Standard)
 	{
-		Vector2[] dirs = {
-			Vector2.Right,
-			Vector2.Up,
-			(0.5f * Vector2.Right) + (0.5f * Vector2.Up),
-			(0.5f * Vector2.Right) + (0.5f * Vector2.Down)
-		};
+		return new Vector2(
+			Random(-1.0f, 1.0f, method),
+			Random(-1.0f, 1.0f, method)
+		)
+		.Normalized();
+	}
 
-		return Pick(dirs) * Random(-1.0f, 1.0f);
+	/// <summary> Returns a random direction in 3D space. </summary>
+	public static Vector3 RandomDir3D(RandomMethod method = RandomMethod.Standard)
+	{
+		return new Vector3(
+			Random(-1.0f, 1.0f, method),
+			Random(-1.0f, 1.0f, method),
+			Random(-1.0f, 1.0f, method)
+		)
+		.Normalized();
 	}
 
 	/// <summary> Picks a random element from an array. </summary>
