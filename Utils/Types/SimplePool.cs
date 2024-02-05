@@ -89,4 +89,25 @@ public partial class SimplePool<T> : RefCounted where T: class
 
 		return @object;
 	}
+
+	/// <summary>
+	/// Pre-allocates a set amount of items
+	/// </summary>
+	/// <param name="count">The amount of items to reserve. (Caps at max capacity.)</param>
+	public void Reserve(uint count)
+	{
+		uint amountReserved = 0;
+		count = Math.Min(_maxCapacity, count);
+
+		for (uint i = 0; i < _maxCapacity; ++i) {
+			if (amountReserved >= count)
+				break;
+
+			if (_values[i] is not null)
+				continue;
+
+			_values[i] = _handler.PoolCreate();
+			amountReserved ++;
+		}
+	}
 }
