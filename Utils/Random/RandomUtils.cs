@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace SadChromaLib.Utils.Random;
 
@@ -38,36 +39,42 @@ public static class RandomUtils
 	#region Generation Methods
 
 	/// <summary> Returns a random float value using Godot's 'rand_range' method. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static float StandardFloat(float minValue = 0.0f, float maxValue = 1.0f)
 	{
 		return (float) GD.RandRange(minValue, maxValue);
 	}
 
 	/// <summary> Returns a random value between 0.0 - 1.0. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static float BasicFloat()
 	{
 		return _rng.NextFloat();
 	}
 
 	/// <summary> Returns a random integer value. Control its highest output value using the modulo '%' operator. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static int BasicInt()
 	{
 		return _rng.Next();
 	}
 
 	/// <summary> Returns a random float value between the specified range. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static float RangeFloat(float minValue = 0.0f, float maxValue = 1.0f)
 	{
 		return minValue + (BasicFloat() * (maxValue - minValue));
 	}
 
 	/// <summary> Returns a random integer value between the specified range. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static long RangeLong(int minValue = 0, int maxValue = 100, bool addOne = false)
 	{
 		return minValue + (BasicInt() % (maxValue - minValue + (addOne ? 1 : 0)));
 	}
 
 	/// <summary> Returns a random float value by picking a random element from an array filled with randomised values. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static float ShuffleRand(float minValue = 0.0f, float maxValue = 1.0f, int size = 8, RandomMethod method = RandomMethod.WeightedAlt)
 	{
 		Span<float> values = stackalloc float[size];
@@ -92,6 +99,7 @@ public static class RandomUtils
 	}
 
 	/// <summary> Returns a weighted random float value. (Adapted from https://stackoverflow.com/questions/29915888/weighted-random-number-without-predefined-values.) </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static float WeightedRand(float minValue = 0.0f, float maxValue = 1.0f)
 	{
 		return MathF.Floor(
@@ -100,6 +108,7 @@ public static class RandomUtils
 	}
 
 	/// <summary> A variation of the WeightedRand method that uses a randomsied factor. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static float WeightedRandAlt(float minValue = 0.0f, float maxValue = 1.0f, float fac = 0.5f)
 	{
 		if (BasicFloat() <= fac) {
@@ -114,6 +123,7 @@ public static class RandomUtils
 	#region Main Functions
 
 	/// <summary> Returns a random float value using the specified method. (The 'factor' parameter is only used by the 'Weighted' generator method.) </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static float Random(float minValue = 0.0f, float maxValue = 1.0f, RandomMethod method = RandomMethod.Basic, float factor = 0.5f)
 	{
 		return method switch {
@@ -126,6 +136,7 @@ public static class RandomUtils
 	}
 
 	/// <summary> Returns a random integer value between the specified range. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static int Random(int minValue = 0, int maxValue = 100, bool addOne = false)
 	{
 		return (int) RangeLong(minValue, maxValue, addOne);
@@ -170,12 +181,14 @@ public static class RandomUtils
 	}
 
 	/// <summary> Returns true if the generator returns a number smaller than the value of the 'probability' parameter. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool Chance(float probability, RandomMethod method = RandomMethod.Shuffle)
 	{
 		return Random(0.0f, 1.0f, method) < probability;
 	}
 
 	/// <summary> Returns a random direction in 2D space. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Vector2 RandomDir2D(RandomMethod method = RandomMethod.Standard)
 	{
 		return new Vector2(
@@ -186,6 +199,7 @@ public static class RandomUtils
 	}
 
 	/// <summary> Returns a random direction in 3D space. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Vector3 RandomDir3D(RandomMethod method = RandomMethod.Standard)
 	{
 		return new Vector3(
@@ -197,36 +211,49 @@ public static class RandomUtils
 	}
 
 	/// <summary> Picks a random element from an array. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static T Pick<T>(T[] array)
 	{
 		return array[BasicInt() % array.Length];
 	}
 
 	/// <summary> Picks a random element from a span. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static T Pick<T>(ReadOnlySpan<T> span)
+	{
+		return span[(int) BasicInt() % span.Length];
+	}
+
+	/// <summary> Picks a random element from a span. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static T Pick<T>(Span<T> span)
 	{
 		return span[(int) BasicInt() % span.Length];
 	}
 
 	/// <summary> Picks a random element from a Godot array. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Variant Pick(Godot.Collections.Array array)
 	{
 		return array[(int) (BasicInt() % array.Count)];
 	}
 
 	/// <summary> Picks a random element from a Godot array. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static T Pick<[MustBeVariant] T>(Godot.Collections.Array<T> array)
 	{
 		return array[(int) (BasicInt() % array.Count)];
 	}
 
 	/// <summary> Picks a random element from a list. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static T Pick<T>(System.Collections.Generic.List<T> list)
 	{
 		return list[(int) (BasicInt() % list.Count)];
 	}
 
 	/// <summary> Shuffles a selected array using the Fisher-Yates algorithm. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void Shuffle<T>(T[] array)
 	{
 		for (int j = array.Length; j --> 1;) {
@@ -239,6 +266,21 @@ public static class RandomUtils
 		}
 	}
 
+	/// <summary> Shuffles a selected span using the Fisher-Yates algorithm. </summary>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static void Shuffle<T>(Span<T> span)
+	{
+		for (int j = span.Length; j --> 1;) {
+			int i = (int) (BasicInt() % j);
+
+			if (i == j)
+				continue;
+
+			(span[j], span[i]) = (span[i], span[j]);
+		}
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static void Shuffle<T>(ref Span<T> span)
 	{
 		for (int j = span.Length; j --> 1;) {
