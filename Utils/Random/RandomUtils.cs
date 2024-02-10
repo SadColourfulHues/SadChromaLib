@@ -70,7 +70,7 @@ public static class RandomUtils
 	/// <summary> Returns a random float value by picking a random element from an array filled with randomised values. </summary>
 	public static float ShuffleRand(float minValue = 0.0f, float maxValue = 1.0f, int size = 8, RandomMethod method = RandomMethod.WeightedAlt)
 	{
-		float[] values = new float[size];
+		Span<float> values = stackalloc float[size];
 
 		// Generate an array of random floats
 		for (int i = 0; i < size; ++ i) {
