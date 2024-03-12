@@ -9,9 +9,6 @@ The super-module of SadChromaLib. It implements a variety of commonly-used featu
 ### SadChromaLib.Persistence:
   -> A module implementing data persistence support (saving/loading).
 
-### SadChromaLib.Tests:
-  -> A module implementing instances for testing SadChromaLib functionality.
-
 ----
 
 ## Optional Modules:
