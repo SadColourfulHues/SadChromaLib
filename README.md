@@ -21,6 +21,10 @@ The super-module of SadChromaLib. It implements a variety of commonly-used featu
 #### (https://github.com/SadColourfulHues/Animation)
   -> A module implementing procedural methods for animating in-game objects.
 
+### SadChromaLib.UI
+#### (https://github.com/SadColourfulHues/UI)
+  -> A module implementing common user-interface elements.
+
 ----
 
 ## Specialisations:
@@ -42,4 +46,6 @@ These submodules implements case-specific functionality that isn't required by e
 #### (https://github.com/SadColourfulHues/Quests)
   -> A submodule implementing a basic questing system.
 
+## Testing
+All SCHLib testing-related sources has been moved to the [SCHTesting](https://github.com/SadColourfulHues/SCHTesting) repository.
 
