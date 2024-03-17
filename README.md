@@ -21,9 +21,10 @@ The super-module of SadChromaLib. It implements a variety of commonly-used featu
 #### (https://github.com/SadColourfulHues/Animation)
   -> A module implementing procedural methods for animating in-game objects.
 
-### SadChromaLib.UI
+### SadChromaLib.UI (Standalone!)
 #### (https://github.com/SadColourfulHues/UI)
   -> A module implementing common user-interface elements.
+  -> This submodule can be used without needing the base SadChromaLib module!
 
 ----
 
