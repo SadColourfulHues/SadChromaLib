@@ -13,6 +13,12 @@ public sealed partial class TimeSinceObserver : RefCounted
         _targetElapsedTime = targetElapsedTime;
     }
 
+    /// <summary> Updates the observer's elapsed time target </summary>
+    public void SetTargetElapsedTime(float targetElapsedTime)
+    {
+        _targetElapsedTime = targetElapsedTime;
+    }
+
     /// <summary> Start measuring time from this point onwards. </summary>
     public void Reset()
     {
