@@ -1,3 +1,5 @@
+using Godot;
+
 namespace SadChromaLib.Utils.Timing;
 
 /// <summary> A TimeSinceObserver is a utility object that can be used to measure the time since an action was started. Useful for things like hold confirmation.</summary>
