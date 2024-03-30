@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Diagnostics;
 
-namespace SadChromaLib.Utils.Types;
+namespace SadChromaLib.Types;
 
 public interface IPoolHandler<T> where T: class
 {

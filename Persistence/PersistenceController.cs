@@ -1,18 +1,20 @@
+global using DataDict = System.Collections.Generic.Dictionary<string, SadChromaLib.Types.AnyData>;
+
 using Godot;
 
 using System;
+using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace SadChromaLib.Persistence;
-
-using SerialisedData = Godot.Collections.Dictionary<StringName, Variant>;
 
 /// <summary>
 /// A persistent object that writes to its own file.
 /// </summary>
 public interface ISerialisable
 {
-	void SerialisableWrite(FileAccess fileRef);
-	void SerialisableRead(string serialisedData);
+	void SerialisableWrite(PersistenceWriter writer);
+	void SerialisableRead(PersistenceReader reader);
 	string SerialisableGetFilename();
 }
 
@@ -21,8 +23,8 @@ public interface ISerialisable
 /// </summary>
 public interface ISerialisableComponent
 {
-	SerialisedData Serialise();
-	void Deserialise(SerialisedData data);
+	void Serialise(PersistenceWriter writer);
+	void Deserialise(PersistenceReader reader);
 }
 
 /// <summary>
@@ -32,8 +34,7 @@ public interface ISerialisableComponent
 public sealed partial class PersistenceController: Resource
 {
 	public const string SaveNameAuto = "Autosave";
-	private const string BaseDir = "user://SaveData";
-	private const string SaveNameTemporary = "_tmp";
+	private const string SaveNameTemporary = "Transient";
 
 	[Signal]
 	public delegate void WillLoadEventHandler();
@@ -144,10 +145,10 @@ public sealed partial class PersistenceController: Resource
 	/// Returns true if a transient save data exists.
 	/// </summary>
 	/// <returns></returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool HasTransientData()
 	{
-		string baseDir = GetBaseDir(SaveNameTemporary);
-		return DirAccess.DirExistsAbsolute(baseDir);
+		return Directory.Exists(GetDirPath(SaveNameTemporary));
 	}
 
 	#endregion
@@ -160,12 +161,14 @@ public sealed partial class PersistenceController: Resource
 	/// <returns></returns>
 	public static string[] GetSaveNames()
 	{
-		if (!DirAccess.DirExistsAbsolute(BaseDir)) {
-			DirAccess.MakeDirRecursiveAbsolute(BaseDir);
+		string baseDirPath = GetDirPath();
+
+		if (!Directory.Exists(baseDirPath)) {
+			Directory.CreateDirectory(baseDirPath);
 		}
 
-		ReadOnlySpan<string> saveNames = DirAccess.GetDirectoriesAt(BaseDir);
-		Span<string> names = new string[saveNames.Length];
+		ReadOnlySpan<string> saveNames = Directory.GetDirectories(baseDirPath);
+		string[] names = new string[saveNames.Length];
 
 		int namesCount = 0;
 
@@ -173,11 +176,11 @@ public sealed partial class PersistenceController: Resource
 			if (saveNames[i] == SaveNameTemporary)
 				continue;
 
-			names[namesCount] = saveNames[i];
+			names[namesCount] = Path.GetDirectoryName(saveNames[i]);
 			namesCount ++;
 		}
 
-		return names[..namesCount].ToArray();
+		return names[..namesCount];
 	}
 
 	/// <summary>
@@ -186,36 +189,23 @@ public sealed partial class PersistenceController: Resource
 	/// <param name="saveName">The name of the save data to delete.</param>
 	public static void DeleteSaveData(string saveName)
 	{
-		string baseDir = GetBaseDir(saveName);
+		string dirPath = GetDirPath(saveName);
 
-		if (!DirAccess.DirExistsAbsolute(baseDir))
+		if (!Directory.Exists(dirPath))
 			return;
 
-		DirAccess directory = DirAccess.Open(baseDir);
-		string[] dataFiles = directory.GetFiles();
-
-		for (int i = 0; i < dataFiles.Length; ++ i) {
-			directory.Remove(dataFiles[i]);
-		}
-
-		DirAccess.RemoveAbsolute(baseDir);
+		Directory.Delete(dirPath, true);
 	}
 
 	public static bool WriteToDisk(string saveName, ISerialisable serialisable)
 	{
-		string baseDir = GetBaseDir(saveName);
+		string baseDir = GetDirPath(saveName);
 		MakeSaveDirIfNeeded(saveName);
 
-		string filePath = $"{baseDir}/{serialisable.SerialisableGetFilename()}";
-		FileAccess file = FileAccess.Open(filePath, FileAccess.ModeFlags.Write);
+		string filePath = GetFilePath(saveName, serialisable.SerialisableGetFilename());
 
-		if (file == null)
-			return false;
-
-		serialisable.SerialisableWrite(file);
-
-		if (file.IsOpen()) {
-			file.Close();
+		using (PersistenceWriter serialiser = new(filePath)) {
+			serialisable.SerialisableWrite(serialiser);
 		}
 
 		return true;
@@ -223,22 +213,18 @@ public sealed partial class PersistenceController: Resource
 
 	public static bool ReadFromDisk(string saveName, ISerialisable serialisable)
 	{
-		string baseDir = GetBaseDir(saveName);
-		string filePath = $"{baseDir}/{serialisable.SerialisableGetFilename()}";
+		string baseDir = GetDirPath(saveName);
+		string filePath = GetFilePath(saveName, serialisable.SerialisableGetFilename());
 
-		if (!DirAccess.DirExistsAbsolute(baseDir) ||
-			!FileAccess.FileExists(filePath))
+		if (!Directory.Exists(baseDir) ||
+			!File.Exists(filePath))
 		{
 			return false;
 		}
 
-		FileAccess file = FileAccess.Open(filePath, FileAccess.ModeFlags.Read);
-
-		if (file == null)
-			return false;
-
-		serialisable.SerialisableRead(file.GetAsText());
-		file.Close();
+		using (PersistenceReader deserialiser = new(filePath)) {
+			serialisable.SerialisableRead(deserialiser);
+		}
 
 		return true;
 	}
@@ -253,60 +239,95 @@ public sealed partial class PersistenceController: Resource
 		ReadFromDisk(SaveNameTemporary, serialisable);
 	}
 
-	public static bool CopyData(string srcSaveName, string dstSaveName, Func<string, bool> filter)
+	/// <summary>
+	/// Copies one save data to another
+	/// </summary>
+	/// <param name="srcSaveName">The save data to copy</param>
+	/// <param name="dstSaveName">The save data to paste to</param>
+	/// <param name="filter">An optional function for filtering out data.</param>
+	/// <returns></returns>
+	public static bool CopyData(string srcSaveName, string dstSaveName, Func<string, bool> filter = null)
 	{
-		string srcBaseDir = GetBaseDir(srcSaveName);
-		string dstBaseDir = GetBaseDir(dstSaveName);
+		string srcBaseDir = GetDirPath(srcSaveName);
+		string dstBaseDir = GetDirPath(dstSaveName);
 
-		if (!DirAccess.DirExistsAbsolute(dstBaseDir)) {
-			DirAccess.MakeDirRecursiveAbsolute(dstBaseDir);
+		if (!Directory.Exists(dstBaseDir)) {
+			Directory.CreateDirectory(dstBaseDir);
 		}
 
-		if (!DirAccess.DirExistsAbsolute(srcBaseDir) ||
-			!DirAccess.DirExistsAbsolute(dstBaseDir))
+		if (!Directory.Exists(srcBaseDir) ||
+			!Directory.Exists(dstBaseDir))
 		{
 			return false;
 		}
 
-		ReadOnlySpan<string> fileList = DirAccess.GetFilesAt(srcBaseDir);
+		ReadOnlySpan<string> fileList = Directory.GetFiles(srcBaseDir);
 
 		for (int i = 0; i < fileList.Length; ++ i) {
 			if (!(filter?.Invoke(fileList[i]) ?? true))
 				continue;
 
-			string srcFilePath = $"{srcBaseDir}/{fileList[i]}";
-			string dstFilePath = $"{dstBaseDir}/{fileList[i]}";
+			string fileName = Path.GetFileName(fileList[i]);
 
-			DirAccess.CopyAbsolute(srcFilePath, dstFilePath);
+			File.Copy(
+				sourceFileName: Path.Join(srcBaseDir, fileName),
+				destFileName: Path.Join(dstBaseDir, fileName)
+			);
 		}
 
 		return true;
 	}
 
-	public static bool CopyDataFromTemporary(string saveName, Func<string, bool> filter)
+	/// <summary>
+	/// Copies stored data from the transient save directory to an actual save slot
+	/// </summary>
+	/// <param name="saveName">The save data to paste to</param>
+	/// <param name="filter">An optional function for filtering out data.</param>
+	/// <returns></returns>
+	public static bool CopyDataFromTemporary(string saveName, Func<string, bool> filter = null)
 	{
 		return CopyData(SaveNameTemporary, saveName, filter);
 	}
 
-	public static bool CopyDataToTemporary(string saveName, Func<string, bool> filter)
+	/// <summary>
+	/// Copies a specified save data to the transient save directory
+	/// </summary>
+	/// <param name="saveName">The save data to copy</param>
+	/// <param name="filter">An optional function for filtering out data.</param>
+	/// <returns></returns>
+	public static bool CopyDataToTemporary(string saveName, Func<string, bool> filter = null)
 	{
 		return CopyData(saveName, SaveNameTemporary, filter);
 	}
 
 	private static void MakeSaveDirIfNeeded(string saveName)
 	{
-		string baseDir = GetBaseDir(saveName);
+		string dirPath = GetDirPath(saveName);
 
-		if (DirAccess.DirExistsAbsolute(baseDir))
+		if (Directory.Exists(dirPath))
 			return;
 
-		DirAccess.MakeDirRecursiveAbsolute(baseDir);
+		Directory.CreateDirectory(dirPath);
 	}
 
 	#endregion
 
-	private static string GetBaseDir(string saveName)
-	{
-		return $"{BaseDir}/{saveName}";
+	#region Path Utils
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	private static string GetDirPath() {
+		return Path.Combine(OS.GetUserDataDir(), "SaveData");
 	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	private static string GetDirPath(string saveName) {
+		return Path.Combine(OS.GetUserDataDir(), "SaveData", saveName);
+	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	private static string GetFilePath(string saveName, string fileName) {
+		return Path.Combine(OS.GetUserDataDir(), "SaveData", saveName, fileName);
+	}
+
+	#endregion
 }

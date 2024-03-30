@@ -3,7 +3,7 @@ using Godot;
 using System;
 using System.Diagnostics;
 
-namespace SadChromaLib.Utils.Types;
+namespace SadChromaLib.Types;
 
 /// <summary>
 /// A list-like collection that stores data in an internal array.

@@ -2,7 +2,7 @@ using Godot;
 
 using System;
 
-namespace SadChromaLib.Utils.Types;
+namespace SadChromaLib.Types;
 
 public interface IObjectPoolHandler<T> where T: GodotObject, new()
 {
