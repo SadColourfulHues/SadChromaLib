@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.IO;
 
 using Godot;
@@ -116,20 +117,14 @@ public sealed class PersistenceReader: IDisposable
         }
     }
 
-    public AnyData[] ReadArray()
-    {
-        if (!ReadTestIdentifier('A'))
-            throw new InvalidDataException();
-
-        int length = _reader.ReadInt32();
-        AnyData[] array = new AnyData[length];
-
-        for (int i = 0; i < length; ++i) {
-            array[i] = ReadAny();
-        }
-
-        return array;
-    }
+    public AnyData[] ReadAnyArray() => ReadGenericArray(ReadAny);
+    public bool[] ReadBoolArray() => ReadGenericArray(_reader.ReadBoolean);
+    public int[] ReadIntArray() => ReadGenericArray(_reader.ReadInt32);
+    public float[] ReadFloatArray() => ReadGenericArray(_reader.ReadSingle);
+    public Vector2[] ReadVec2Array() => ReadGenericArray(ReadVec2);
+    public Vector3[] ReadVec3Array() => ReadGenericArray(ReadVec3);
+    public Color[] ReadColourArray() => ReadGenericArray(ReadColour);
+    public string[] ReadStringArray() => ReadGenericArray(_reader.ReadString);
 
     public HashSet<string> ReadStringSet()
     {
@@ -238,6 +233,26 @@ public sealed class PersistenceReader: IDisposable
 
     public char ReadChar() {
         return _reader.ReadChar();
+    }
+
+    #endregion
+
+    #region Utils
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private T[] ReadGenericArray<T>(Func<T> readMethod)
+    {
+        if (!ReadTestIdentifier('A'))
+            throw new InvalidDataException();
+
+        int count = _reader.ReadInt32();
+        T[] outrray = new T[count];
+
+        for (int i = 0; i < count; ++i) {
+            outrray[i] = readMethod();
+        }
+
+        return outrray;
     }
 
     #endregion

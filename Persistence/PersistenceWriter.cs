@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.IO;
 
@@ -113,6 +114,14 @@ public sealed class PersistenceWriter: IDisposable
         }
     }
 
+    public void Write(bool[] data) => WriteArray(data, (value) => _writer.Write(value));
+    public void Write(int[] data) => WriteArray(data, (value) => _writer.Write(value));
+    public void Write(float[] data) => WriteArray(data, (value) => _writer.Write(value));
+    public void Write(Vector2[] data) => WriteArray(data, (value) => Write(value));
+    public void Write(Vector3[] data) => WriteArray(data, (value) => Write(value));
+    public void Write(Color[] data) => WriteArray(data, (value) => Write(value));
+    public void Write(string[] data) => WriteArray(data, (value) => _writer.Write(value));
+
     public void Write(HashSet<string> data)
     {
         // Hash set format
@@ -196,6 +205,25 @@ public sealed class PersistenceWriter: IDisposable
 
     public void Write(char value) {
         _writer.Write(value);
+    }
+
+    #endregion
+
+    #region Utils
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void WriteArray<T>(T[] data, Action<T> writeMethod)
+    {
+        // Serialised Array format
+        // Identifier 'A'
+        // Count (int32)
+        // AnyData (x Count)
+        _writer.Write('A');
+        _writer.Write(data.Length);
+
+        for (int i = 0; i < data.Length; ++i) {
+            writeMethod(data[i]);
+        }
     }
 
     #endregion

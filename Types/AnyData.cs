@@ -207,6 +207,7 @@ public struct AnyData
             }
 
             using (StreamReader reader = new(buffer)) {
+                buffer.Seek(0, SeekOrigin.Begin);
                 Text = reader.ReadToEnd();
             }
         }
@@ -284,7 +285,7 @@ public struct AnyData
 
     public DataDict ToDataDict()
     {
-        if (DataType != Type.Array)
+        if (DataType != Type.Dictionary)
             return null;
 
         MemoryStream buffer = new(System.Text.Encoding.ASCII.GetBytes(Text));
@@ -338,6 +339,7 @@ public struct AnyData
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Vector2[](AnyData d) { return d.ToVec2Array(); }
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Vector3[](AnyData d) { return d.ToVec3Array(); }
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Color[](AnyData d) { return d.ToColourArray(); }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator string[](AnyData d) { return d.ToStringArray(); }
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData[](AnyData d) { return d.ToAnyArray(); }
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator DataDict(AnyData d) { return d.ToDataDict(); }
 
@@ -358,6 +360,7 @@ public struct AnyData
             }
 
             using (StreamReader reader = new(buffer)) {
+                buffer.Seek(0, SeekOrigin.Begin);
                 Text = reader.ReadToEnd();
             }
         }
