@@ -10,7 +10,7 @@ using SadChromaLib.Types;
 namespace SadChromaLib.Persistence;
 
 /// <summary>
-/// A helper class for serialising binary data
+/// A helper class for deserialising binary data
 /// </summary>
 public sealed class PersistenceReader: IDisposable
 {
