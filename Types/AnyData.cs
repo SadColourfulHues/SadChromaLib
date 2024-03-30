@@ -76,11 +76,11 @@ public struct AnyData
         DataType = Type.Float;
     }
 
-    public AnyData(string text, Type? @override = null)
+    public AnyData(string value)
         : this()
     {
-        Text = text;
-        DataType = @override ?? Type.String;
+        Text = value;
+        DataType = Type.String;
     }
 
     public AnyData(Vector2 v)
@@ -306,6 +306,20 @@ public struct AnyData
     #endregion
 
     #region Utilities
+
+    public override string ToString()
+    {
+        return DataType switch {
+            Type.Bool => BoolValue.ToString(),
+            Type.Int => IntValue.ToString(),
+            Type.Float => X.ToString(),
+            Type.Vector2 => ToVec2Array().ToString(),
+            Type.Vector3 => ToVec3Array().ToString(),
+            Type.Colour => ToColourArray().ToString(),
+            Type.String => Text,
+            _ => "n/a",
+        };
+    }
 
     private void SerialiseArray<T>(T[] data, Type internalType, Action<PersistenceWriter, T> writeMethod)
     {
