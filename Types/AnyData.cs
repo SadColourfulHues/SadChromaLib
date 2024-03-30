@@ -220,68 +220,28 @@ public struct AnyData
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public readonly Color AsColour() { return new(X, Y, Z, (float)A/255f); }
 
     public bool[] ToBoolArray()
-    {
-        return DeserialiseArray(
-            expectedInternalType: Type.Bool,
-            (reader) => reader.ReadBool()
-        );
-    }
+        => DeserialiseArray(Type.Bool, (reader) => reader.ReadBool());
 
     public int[] ToIntArray()
-    {
-        return DeserialiseArray(
-            expectedInternalType: Type.Int,
-            (reader) => reader.ReadInt()
-        );
-    }
+        => DeserialiseArray(Type.Int, (reader) => reader.ReadInt());
 
     public float[] ToFloatArray()
-    {
-        return DeserialiseArray(
-            expectedInternalType: Type.Float,
-            (reader) => reader.ReadFloat()
-        );
-    }
+        => DeserialiseArray(Type.Float, (reader) => reader.ReadFloat());
 
     public Vector2[] ToVec2Array()
-    {
-        return DeserialiseArray(
-            expectedInternalType: Type.Vector2,
-            (reader) => reader.ReadVec2()
-        );
-    }
+        => DeserialiseArray(Type.Vector2, (reader) => reader.ReadVec2());
 
     public Vector3[] ToVec3Array()
-    {
-        return DeserialiseArray(
-            expectedInternalType: Type.Vector3,
-            (reader) => reader.ReadVec3()
-        );
-    }
+        => DeserialiseArray(Type.Vector3, (reader) => reader.ReadVec3());
 
     public Color[] ToColourArray()
-    {
-        return DeserialiseArray(
-            expectedInternalType: Type.Colour,
-            (reader) => reader.ReadColour()
-        );
-    }
+        => DeserialiseArray(Type.Colour, (reader) => reader.ReadColour());
 
     public string[] ToStringArray()
-    {
-        return DeserialiseArray(
-            expectedInternalType: Type.String,
-            (reader) => reader.ReadString()
-        );
-    }
+        => DeserialiseArray(Type.String, (reader) => reader.ReadString());
 
     public AnyData[] ToAnyArray()
-    {
-        return DeserialiseArray(
-            expectedInternalType: Type.Any,
-            (reader) => reader.ReadAny()
-        );
-    }
+        => DeserialiseArray(Type.Any, (reader) => reader.ReadAny());
 
     public DataDict ToDataDict()
     {
@@ -307,41 +267,41 @@ public struct AnyData
 
     #region Implicit Conversions
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(bool value) { return new(value); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(int value) { return new(value); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(float value) { return new(value); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(Vector2 value) { return new(value); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(Vector3 value) { return new(value); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(Color value) { return new(value); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(string value) { return new(value); }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(bool value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(int value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(float value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(Vector2 value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(Vector3 value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(Color value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(string value) => new(value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(bool[] value) { return new(value); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(int[] value) { return new(value); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(float[] value) { return new(value); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(Vector2[] value) { return new(value); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(Vector3[] value) { return new(value); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(Color[] value) { return new(value); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(string[] value) { return new(value); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(AnyData[] value) { return new(value); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(DataDict value) { return new(value); }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(bool[] value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(int[] value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(float[] value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(Vector2[] value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(Vector3[] value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(Color[] value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(string[] value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(AnyData[] value) => new(value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData(DataDict value) => new(value);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator bool(AnyData d) { return d.BoolValue; }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator int(AnyData d) { return d.IntValue; }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator float(AnyData d) { return d.X; }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Vector2(AnyData d) { return d.AsV2(); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Vector3(AnyData d) { return d.AsV3(); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Color(AnyData d) { return d.AsColour(); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator string(AnyData d) { return d.Text; }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator bool(AnyData d) => d.BoolValue;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator int(AnyData d) => d.IntValue;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator float(AnyData d) => d.X;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Vector2(AnyData d) => d.AsV2();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Vector3(AnyData d) => d.AsV3();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Color(AnyData d) => d.AsColour();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator string(AnyData d) => d.Text;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator bool[](AnyData d) { return d.ToBoolArray(); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator int[](AnyData d) { return d.ToIntArray(); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator float[](AnyData d) { return d.ToFloatArray(); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Vector2[](AnyData d) { return d.ToVec2Array(); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Vector3[](AnyData d) { return d.ToVec3Array(); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Color[](AnyData d) { return d.ToColourArray(); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator string[](AnyData d) { return d.ToStringArray(); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData[](AnyData d) { return d.ToAnyArray(); }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator DataDict(AnyData d) { return d.ToDataDict(); }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator bool[](AnyData d) => d.ToBoolArray();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator int[](AnyData d) => d.ToIntArray();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator float[](AnyData d) => d.ToFloatArray();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Vector2[](AnyData d) => d.ToVec2Array();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Vector3[](AnyData d) => d.ToVec3Array();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator Color[](AnyData d) => d.ToColourArray();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator string[](AnyData d) => d.ToStringArray();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator AnyData[](AnyData d) => d.ToAnyArray();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static implicit operator DataDict(AnyData d) => d.ToDataDict();
 
     #endregion
 
