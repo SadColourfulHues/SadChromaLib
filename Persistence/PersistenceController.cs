@@ -6,6 +6,8 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 
+using SadChromaLib.Utils.Convenience;
+
 namespace SadChromaLib.Persistence;
 
 /// <summary>
@@ -148,7 +150,7 @@ public sealed partial class PersistenceController: Resource
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool HasTransientData()
 	{
-		return Directory.Exists(GetDirPath(SaveNameTemporary));
+		return Directory.Exists(FilePathUtils.GetSaveDirPath(SaveNameTemporary));
 	}
 
 	#endregion
@@ -161,7 +163,7 @@ public sealed partial class PersistenceController: Resource
 	/// <returns></returns>
 	public static string[] GetSaveNames()
 	{
-		string baseDirPath = GetDirPath();
+		string baseDirPath = FilePathUtils.GetSaveDirPath();
 
 		if (!Directory.Exists(baseDirPath)) {
 			Directory.CreateDirectory(baseDirPath);
@@ -189,7 +191,7 @@ public sealed partial class PersistenceController: Resource
 	/// <param name="saveName">The name of the save data to delete.</param>
 	public static void DeleteSaveData(string saveName)
 	{
-		string dirPath = GetDirPath(saveName);
+		string dirPath = FilePathUtils.GetSaveDirPath(saveName);
 
 		if (!Directory.Exists(dirPath))
 			return;
@@ -199,10 +201,10 @@ public sealed partial class PersistenceController: Resource
 
 	public static bool WriteToDisk(string saveName, ISerialisable serialisable)
 	{
-		string baseDir = GetDirPath(saveName);
+		string baseDir = FilePathUtils.GetSaveDirPath(saveName);
 		MakeSaveDirIfNeeded(saveName);
 
-		string filePath = GetFilePath(saveName, serialisable.SerialisableGetFilename());
+		string filePath = FilePathUtils.GetSaveFilePath(saveName, serialisable.SerialisableGetFilename());
 
 		using (PersistenceWriter serialiser = new(filePath)) {
 			serialisable.SerialisableWrite(serialiser);
@@ -213,8 +215,8 @@ public sealed partial class PersistenceController: Resource
 
 	public static bool ReadFromDisk(string saveName, ISerialisable serialisable)
 	{
-		string baseDir = GetDirPath(saveName);
-		string filePath = GetFilePath(saveName, serialisable.SerialisableGetFilename());
+		string baseDir = FilePathUtils.GetSaveDirPath(saveName);
+		string filePath = FilePathUtils.GetSaveFilePath(saveName, serialisable.SerialisableGetFilename());
 
 		if (!Directory.Exists(baseDir) ||
 			!File.Exists(filePath))
@@ -248,8 +250,8 @@ public sealed partial class PersistenceController: Resource
 	/// <returns></returns>
 	public static bool CopyData(string srcSaveName, string dstSaveName, Func<string, bool> filter = null)
 	{
-		string srcBaseDir = GetDirPath(srcSaveName);
-		string dstBaseDir = GetDirPath(dstSaveName);
+		string srcBaseDir = FilePathUtils.GetSaveDirPath(srcSaveName);
+		string dstBaseDir = FilePathUtils.GetSaveDirPath(dstSaveName);
 
 		if (!Directory.Exists(dstBaseDir)) {
 			Directory.CreateDirectory(dstBaseDir);
@@ -302,31 +304,12 @@ public sealed partial class PersistenceController: Resource
 
 	private static void MakeSaveDirIfNeeded(string saveName)
 	{
-		string dirPath = GetDirPath(saveName);
+		string dirPath = FilePathUtils.GetSaveDirPath(saveName);
 
 		if (Directory.Exists(dirPath))
 			return;
 
 		Directory.CreateDirectory(dirPath);
-	}
-
-	#endregion
-
-	#region Path Utils
-
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static string GetDirPath() {
-		return Path.Combine(OS.GetUserDataDir(), "SaveData");
-	}
-
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static string GetDirPath(string saveName) {
-		return Path.Combine(OS.GetUserDataDir(), "SaveData", saveName);
-	}
-
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static string GetFilePath(string saveName, string fileName) {
-		return Path.Combine(OS.GetUserDataDir(), "SaveData", saveName, fileName);
 	}
 
 	#endregion
