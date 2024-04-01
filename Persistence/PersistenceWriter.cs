@@ -156,6 +156,8 @@ public sealed class PersistenceWriter: IDisposable
     public void Write(ISerialisableComponent data)
         => data.Serialise(this);
 
+    public void Write<T>(T[] data) where T: ISerialisableComponent
+        => WriteArray(data, (item) => item.Serialise(this));
 
     #endregion
 
@@ -214,7 +216,7 @@ public sealed class PersistenceWriter: IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void WriteArray<T>(T[] data, Action<T> writeMethod)
     {
-        // Serialised Array format
+        // Serialised array format
         // Identifier 'A'
         // Count (int32)
         // AnyData (x Count)
