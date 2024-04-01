@@ -140,11 +140,19 @@ public sealed class PersistenceWriter: IDisposable
     {
         // Serialised data format
         // Identifier '%'
+        // Has data (boolean)
         // Count (Int32)
         // -- items -- (x Count)
         // - key (string)
         // - data (AnyData)
         _writer.Write('%');
+
+        if (data is null) {
+            _writer.Write(false);
+            return;
+        }
+
+        _writer.Write(true);
         _writer.Write(data.Count);
 
         foreach ((string key, AnyData value) in data) {
@@ -218,9 +226,17 @@ public sealed class PersistenceWriter: IDisposable
     {
         // Serialised array format
         // Identifier 'A'
+        // HasData (boolean)
         // Count (int32)
         // AnyData (x Count)
         _writer.Write('A');
+
+        if (data is null) {
+            _writer.Write(false);
+            return;
+        }
+
+        _writer.Write(true);
         _writer.Write(data.Length);
 
         for (int i = 0; i < data.Length; ++i) {

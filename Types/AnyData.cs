@@ -196,9 +196,16 @@ public struct AnyData
     public AnyData(DataDict data)
         : this()
     {
+        DataType = Type.Dictionary;
         MemoryStream buffer = new();
 
         using (PersistenceWriter writer = new(buffer)) {
+            if (data is null) {
+                writer.Write(false);
+                return;
+            }
+
+            writer.Write(true);
             writer.Write(data.Count);
 
             foreach ((string key, AnyData value) in data) {
@@ -211,8 +218,6 @@ public struct AnyData
                 Text = reader.ReadToEnd();
             }
         }
-
-        DataType = Type.Dictionary;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public readonly Vector2 AsV2() { return new(X, Y); }
@@ -249,10 +254,14 @@ public struct AnyData
             return null;
 
         MemoryStream buffer = new(System.Text.Encoding.ASCII.GetBytes(Text));
-        DataDict data = new();
+        DataDict data = null;
 
         using (PersistenceReader reader = new(buffer)) {
+            if (!reader.ReadBool())
+                return null;
+
             int count = reader.ReadInt();
+            data = new(count);
 
             for (int i = 0; i < count; ++i) {
                 data.Add(
@@ -323,9 +332,16 @@ public struct AnyData
 
     private void SerialiseArray<T>(T[] data, Type internalType, Action<PersistenceWriter, T> writeMethod)
     {
+        DataType = Type.Array;
         MemoryStream buffer = new();
 
         using (PersistenceWriter writer = new(buffer)) {
+            if (data is null) {
+                writer.Write(false);
+                return;
+            }
+
+            writer.Write(true);
             writer.Write((byte) internalType);
             writer.Write(data.Length);
 
@@ -338,8 +354,6 @@ public struct AnyData
                 Text = reader.ReadToEnd();
             }
         }
-
-        DataType = Type.Array;
     }
 
     private T[] DeserialiseArray<T>(Type expectedInternalType, Func<PersistenceReader, T> readMethod)
@@ -351,6 +365,10 @@ public struct AnyData
         T[] array = null;
 
         using (PersistenceReader reader = new(buffer)) {
+            if (!reader.ReadBool()) {
+                return null;
+            }
+
             Type internalType = (Type) reader.ReadByte();
 
             if (internalType != expectedInternalType)

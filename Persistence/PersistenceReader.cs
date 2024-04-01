@@ -143,6 +143,9 @@ public sealed class PersistenceReader: IDisposable
         if (!ReadTestIdentifier('%'))
             throw new InvalidDataException();
 
+        if (!ReadBool())
+            return null;
+
         int length = _reader.ReadInt32();
         DataDict data = new(length);
 
@@ -217,6 +220,9 @@ public sealed class PersistenceReader: IDisposable
     {
         if (!ReadTestIdentifier('%'))
             throw new InvalidDataException();
+
+        if (!ReadBool())
+            return;
 
         data.Clear();
         int length = _reader.ReadInt32();
@@ -303,6 +309,9 @@ public sealed class PersistenceReader: IDisposable
         if (!ReadTestIdentifier('A'))
             throw new InvalidDataException();
 
+        if (!ReadBool())
+            return null;
+
         int count = _reader.ReadInt32();
         T[] outrray = new T[count];
 
@@ -319,6 +328,9 @@ public sealed class PersistenceReader: IDisposable
     {
         if (!ReadTestIdentifier('A'))
             throw new InvalidDataException();
+
+        if (!ReadBool())
+            return;
 
         int count = _reader.ReadInt32();
 
