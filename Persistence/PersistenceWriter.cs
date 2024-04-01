@@ -93,6 +93,8 @@ public sealed class PersistenceWriter: IDisposable
         // Count (int32)
         // AnyData (x Count)
         _writer.Write('A');
+        _writer.Write(true);
+
         _writer.Write(data.Length);
 
         for (int i = 0; i < data.Length; ++i) {
@@ -107,6 +109,14 @@ public sealed class PersistenceWriter: IDisposable
         // Count (int32)
         // AnyData (x Count)
         _writer.Write('A');
+
+        if (data is null) {
+            _writer.Write(false);
+            return;
+        }
+
+        _writer.Write(true);
+
         _writer.Write(data.Length);
 
         for (int i = 0; i < data.Length; ++i) {
@@ -129,6 +139,13 @@ public sealed class PersistenceWriter: IDisposable
         // Count (int32)
         // Data (x Count)
         _writer.Write('H');
+
+        if (data is null) {
+            _writer.Write(false);
+            return;
+        }
+
+        _writer.Write(true);
         _writer.Write(data.Count);
 
         foreach (string item in data) {

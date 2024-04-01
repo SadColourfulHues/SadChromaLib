@@ -110,6 +110,9 @@ public sealed class PersistenceReader: IDisposable
         if (!ReadTestIdentifier('A'))
             throw new InvalidDataException();
 
+        if (!ReadBool())
+            return null;
+
         int count = _reader.ReadInt32();
         T[] components = new T[count];
 
@@ -126,6 +129,9 @@ public sealed class PersistenceReader: IDisposable
     {
         if (ReadTestIdentifier('H'))
             throw new InvalidDataException();
+
+        if (!ReadBool())
+            return null;
 
         int length = _reader.ReadInt32();
         HashSet<string> set = new(length);
@@ -180,6 +186,9 @@ public sealed class PersistenceReader: IDisposable
         if (!ReadTestIdentifier('A'))
             throw new InvalidDataException();
 
+        if (!ReadBool())
+            return;
+
         int count = _reader.ReadInt32();
 
         for (int i = 0; i < count; ++i) {
@@ -194,6 +203,9 @@ public sealed class PersistenceReader: IDisposable
         if (!ReadTestIdentifier('A'))
             throw new InvalidDataException();
 
+        if (!ReadBool())
+            return;
+
         int count = _reader.ReadInt32();
 
         for (int i = 0; i < count; ++i) {
@@ -206,6 +218,9 @@ public sealed class PersistenceReader: IDisposable
     {
         if (ReadTestIdentifier('H'))
             throw new InvalidDataException();
+
+        if (!ReadBool())
+            return;
 
         int length = _reader.ReadInt32();
         set.Clear();
