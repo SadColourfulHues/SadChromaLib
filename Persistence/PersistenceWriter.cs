@@ -26,7 +26,11 @@ public sealed class PersistenceWriter: IDisposable
 
     public PersistenceWriter(string filePath)
     {
-        FileStream file = File.Open(filePath, FileMode.OpenOrCreate);
+        if (File.Exists(filePath)) {
+            File.Delete(filePath);
+        }
+
+        FileStream file = File.Open(filePath, FileMode.Create);
         _writer = new(file);
     }
 
