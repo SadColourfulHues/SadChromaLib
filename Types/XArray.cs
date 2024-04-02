@@ -10,7 +10,7 @@ namespace SadChromaLib.Types;
 /// </summary>
 /// <value></value>
 public sealed class XArray<T>
-    where T: struct, IComparable
+    where T: struct
 {
     readonly public int MaxCapacity;
     readonly T?[] _data;
@@ -56,6 +56,46 @@ public sealed class XArray<T>
 
             return count;
         }
+    }
+
+    /// <summary>
+    /// Returns the first valid item in the array
+    /// </summary>
+    /// <returns></returns>
+    public bool TryGetFirst(out T item)
+    {
+        ReadOnlySpan<T?> data = _data.AsSpan();
+
+        for (int i = 0; i < MaxCapacity; ++i) {
+            if (data[i] is null)
+                continue;
+
+            item = data[i].Value;
+            return true;
+        }
+
+        item = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Returns the first valid item from the end of the array
+    /// </summary>
+    /// <returns></returns>
+    public bool TryGetLast(out T item)
+    {
+        ReadOnlySpan<T?> data = _data.AsSpan();
+
+        for (int i = MaxCapacity; i --> 0;) {
+            if (data[i] is null)
+                continue;
+
+            item = data[i].Value;
+            return true;
+        }
+
+        item = default;
+        return false;
     }
 
     public bool Add(T item)
