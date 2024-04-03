@@ -44,7 +44,7 @@ public sealed class PersistenceWriter: IDisposable
     {
         // AnyData format
         // Identifier '@'
-        // Type (1 bit)
+        // Type (Int8)
         // Data (Variable, depending on type)
 
         _writer.Write('@');

@@ -17,19 +17,14 @@ public interface IPoolHandler<T> where T: class
 	/// </summary>
 	/// <param name="object"></param>
 	bool PoolIsAvailable(T @object);
-
-	/// <summary>
-	/// This method is called when an object is 'destroyed'
-	/// </summary>
-	/// <param name="object"></param>
-	void PoolDestroy(T @object);
 }
 
 /// <summary>
 /// An object that implements basic pooling support for common types.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public partial class SimplePool<T> : RefCounted where T: class
+public partial class SimplePool<T>
+	where T: class
 {
 	protected readonly IPoolHandler<T> _handler;
 
@@ -81,8 +76,10 @@ public partial class SimplePool<T> : RefCounted where T: class
 
 		// If no slots were marked,
 		// we can assume that the pool can no longer hold any more objects
-		if (firstAvailable == null)
-			throw new InvalidOperationException();
+		if (firstAvailable == null) {
+			GD.PrintErr("SimplePool: pool can no longer contain any more data!");
+			return null;
+		}
 
 		T @object = _handler.PoolCreate();
 		_values[firstAvailable.Value] = @object;

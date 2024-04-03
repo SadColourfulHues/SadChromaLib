@@ -11,32 +11,13 @@ using SadChromaLib.Utils.Convenience;
 namespace SadChromaLib.Persistence;
 
 /// <summary>
-/// A persistent object that writes to its own file.
-/// </summary>
-public interface ISerialisable
-{
-	void SerialisableWrite(PersistenceWriter writer);
-	void SerialisableRead(PersistenceReader reader);
-	string SerialisableGetFilename();
-}
-
-/// <summary>
-/// A persistent object that can be used as building blocks for standalone serialisables
-/// </summary>
-public interface ISerialisableComponent
-{
-	void Serialise(PersistenceWriter writer);
-	void Deserialise(PersistenceReader reader);
-}
-
-/// <summary>
 /// A shared controller object for coordinating persistence writes
 /// </summary>
 [GlobalClass]
 public sealed partial class PersistenceController: Resource
 {
 	public const string SaveNameAuto = "Autosave";
-	private const string SaveNameTemporary = "Transient";
+	public const string SaveNameTemporary = "Transient";
 
 	[Signal]
 	public delegate void WillLoadEventHandler();
@@ -74,7 +55,7 @@ public sealed partial class PersistenceController: Resource
 	/// <summary>
 	/// <para>Tells standalone serialisables to read their data from disk.</para>
 	/// <para>* It will only call objects bound to the 'LoadRequested' signal.</para>
-	/// <para>* Use the static 'ReadFromDisk' method to perform the write operation.</para>
+	/// <para>* Use the static 'ReadFromDisk' method to perform the read operation.</para>
 	/// </summary>
 	/// <param name="saveName">The name of the target save directory.</param>
 	public void Load(string saveName)
@@ -86,28 +67,24 @@ public sealed partial class PersistenceController: Resource
 	/// <summary>
 	/// A shorthand for a save request through the 'SaveNameAuto' file
 	/// </summary>
-	public void SaveAutoSave()
-	{
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public void SaveToAuto() {
 		Save(SaveNameAuto);
 	}
 
 	/// <summary>
 	/// A shorthand for a load request through the 'SaveNameAuto' file
 	/// </summary>
-	public void LoadAutoSave()
-	{
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public void LoadFromAuto() {
 		Load(SaveNameAuto);
 	}
-
-	#endregion
-
-	#region Transient Data
 
 	/// <summary>
 	/// Starts a read request using the last loaded save data
 	/// </summary>
 	/// <param name="serialisable"></param>
-	public void RestoreFromCurrent(ISerialisable serialisable)
+	public void LoadFromCurrent(ISerialisable serialisable)
 	{
 		if (_lastSaveName == null)
 			return;
@@ -115,47 +92,9 @@ public sealed partial class PersistenceController: Resource
 		ReadFromDisk(_lastSaveName, serialisable);
 	}
 
-	/// <summary>
-	/// <para>Writes temporary standalone serialisers into the transient save data.</para>
-	/// <para>* It will only call objects bound to the 'SaveTransientRequested' signal.</para>
-	/// <para>* Use the static 'WriteToTemporary' method to perform the write operation.</para>
-	/// </summary>
-	public void SaveTransient()
-	{
-		EmitSignal(SignalName.SaveTransientRequested);
-	}
-
-	/// <summary>
-	/// <para>Reads temporary standalone serialisers from the transient save data.</para>
-	/// <para>* It will only call objects bound to the 'LoadTransientRequested' signal.</para>
-	/// <para>* Use the static 'ReadFromTemporary' method to perform the write operation.</para>
-	/// </summary>
-	public void RestoreTransient()
-	{
-		EmitSignal(SignalName.RestoreTransientRequested);
-	}
-
-	/// <summary>
-	/// Deletes the transient saved data.
-	/// </summary>
-	public static void DeleteTransientData()
-	{
-		DeleteSaveData(SaveNameTemporary);
-	}
-
-	/// <summary>
-	/// Returns true if a transient save data exists.
-	/// </summary>
-	/// <returns></returns>
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool HasTransientData()
-	{
-		return Directory.Exists(FilePathUtils.GetSaveDirPath(SaveNameTemporary));
-	}
-
 	#endregion
 
-	#region I/O methods
+	#region Main I/O
 
 	/// <summary>
 	/// Returns a list of the player's saved data.
@@ -186,19 +125,9 @@ public sealed partial class PersistenceController: Resource
 	}
 
 	/// <summary>
-	/// Deletes a save data with a given name.
+	/// Writes a serialisable file to the specified save data
 	/// </summary>
-	/// <param name="saveName">The name of the save data to delete.</param>
-	public static void DeleteSaveData(string saveName)
-	{
-		string dirPath = FilePathUtils.GetSaveDirPath(saveName);
-
-		if (!Directory.Exists(dirPath))
-			return;
-
-		Directory.Delete(dirPath, true);
-	}
-
+	/// <returns></returns>
 	public static bool WriteToDisk(string saveName, ISerialisable serialisable)
 	{
 		string baseDir = FilePathUtils.GetSaveDirPath(saveName);
@@ -213,6 +142,10 @@ public sealed partial class PersistenceController: Resource
 		return true;
 	}
 
+	/// <summary>
+	/// Reads a serialisable file from the specified save data
+	/// </summary>
+	/// <returns></returns>
 	public static bool ReadFromDisk(string saveName, ISerialisable serialisable)
 	{
 		string baseDir = FilePathUtils.GetSaveDirPath(saveName);
@@ -229,16 +162,6 @@ public sealed partial class PersistenceController: Resource
 		}
 
 		return true;
-	}
-
-	public static void WriteToTemporary(ISerialisable serialisable)
-	{
-		WriteToDisk(SaveNameTemporary, serialisable);
-	}
-
-	public static void ReadFromTemporary(ISerialisable serialisable)
-	{
-		ReadFromDisk(SaveNameTemporary, serialisable);
 	}
 
 	/// <summary>
@@ -281,12 +204,71 @@ public sealed partial class PersistenceController: Resource
 	}
 
 	/// <summary>
+	/// Deletes a save data with a given name.
+	/// </summary>
+	/// <param name="saveName">The name of the save data to delete.</param>
+	public static void DeleteSaveData(string saveName)
+	{
+		string dirPath = FilePathUtils.GetSaveDirPath(saveName);
+
+		if (!Directory.Exists(dirPath))
+			return;
+
+		Directory.Delete(dirPath, true);
+	}
+
+	#endregion
+
+	#region Transient I/O
+
+	/// <summary>
+	/// Returns true if a transient save data exists.
+	/// </summary>
+	/// <returns></returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static bool HasTransientData() {
+		return Directory.Exists(FilePathUtils.GetSaveDirPath(SaveNameTemporary));
+	}
+
+	/// <summary>
+	/// <para>Writes temporary standalone serialisers into the transient save data.</para>
+	/// <para>* It will only call objects bound to the 'SaveTransientRequested' signal.</para>
+	/// <para>* Use the static 'WriteToTransient' method to perform the write operation.</para>
+	/// </summary>
+	public void SaveTransient() {
+		EmitSignal(SignalName.SaveTransientRequested);
+	}
+
+	/// <summary>
+	/// <para>Reads temporary standalone serialisers from the transient save data.</para>
+	/// <para>* It will only call objects bound to the 'LoadTransientRequested' signal.</para>
+	/// <para>* Use the static 'ReadFromTransient' method to perform the read operation.</para>
+	/// </summary>
+	public void LoadTransient() {
+		EmitSignal(SignalName.RestoreTransientRequested);
+	}
+
+	/// <summary>
+	/// Writes the contents of a serialisable file to the transient save data dir
+	/// </summary>
+	public static void WriteToTransient(ISerialisable serialisable) {
+		WriteToDisk(SaveNameTemporary, serialisable);
+	}
+
+	/// <summary>
+	/// Reads the contents of a serialisable file from the transient save data dir
+	/// </summary>
+	public static void ReadFromTransient(ISerialisable serialisable) {
+		ReadFromDisk(SaveNameTemporary, serialisable);
+	}
+
+	/// <summary>
 	/// Copies stored data from the transient save directory to an actual save slot
 	/// </summary>
 	/// <param name="saveName">The save data to paste to</param>
 	/// <param name="filter">An optional function for filtering out data.</param>
 	/// <returns></returns>
-	public static bool CopyDataFromTemporary(string saveName, Func<string, bool> filter = null)
+	public static bool CopyFromTransient(string saveName, Func<string, bool> filter = null)
 	{
 		return CopyData(SaveNameTemporary, saveName, filter);
 	}
@@ -297,10 +279,21 @@ public sealed partial class PersistenceController: Resource
 	/// <param name="saveName">The save data to copy</param>
 	/// <param name="filter">An optional function for filtering out data.</param>
 	/// <returns></returns>
-	public static bool CopyDataToTemporary(string saveName, Func<string, bool> filter = null)
+	public static bool CopyToTransient(string saveName, Func<string, bool> filter = null)
 	{
 		return CopyData(saveName, SaveNameTemporary, filter);
 	}
+
+	/// <summary>
+	/// Deletes the transient saved data.
+	/// </summary>
+	public static void DeleteTransientData() {
+		DeleteSaveData(SaveNameTemporary);
+	}
+
+	#endregion
+
+	#region Utils
 
 	private static void MakeSaveDirIfNeeded(string saveName)
 	{

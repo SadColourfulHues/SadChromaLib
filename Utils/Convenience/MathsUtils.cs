@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace SadChromaLib.Utils.Maths;
+namespace SadChromaLib.Utils.Convenience;
 
 /// <summary> A collection of commonly-used maths-related methods. </summary>
 public static class MathsUtils

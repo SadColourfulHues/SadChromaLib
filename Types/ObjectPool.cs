@@ -14,7 +14,8 @@ public interface IObjectPoolHandler<T> where T: GodotObject, new()
 /// A type of SimplePool for Godot objects
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public partial class ObjectPool<T> : SimplePool<T> where T : GodotObject, new()
+public partial class ObjectPool<T> : SimplePool<T>
+	where T : GodotObject, new()
 {
 	public ObjectPool(uint maxCapacity, IObjectPoolHandler<T> objectHandler)
 		: base(maxCapacity, new DefaultObjectHandler(objectHandler))
@@ -29,7 +30,7 @@ public partial class ObjectPool<T> : SimplePool<T> where T : GodotObject, new()
 		ReadOnlySpan<T> values = _values;
 
 		for (int i = 0; i < _maxCapacity; ++ i) {
-			if (!IsInstanceValid(values[i]))
+			if (!GodotObject.IsInstanceValid(values[i]))
 				continue;
 
 			values[i].CallDeferred(GodotObject.MethodName.Free);
@@ -41,8 +42,7 @@ public partial class ObjectPool<T> : SimplePool<T> where T : GodotObject, new()
 	{
 		private readonly IObjectPoolHandler<T> _handler;
 
-		public DefaultObjectHandler(IObjectPoolHandler<T> handler)
-		{
+		public DefaultObjectHandler(IObjectPoolHandler<T> handler) {
 			_handler = handler;
 		}
 
@@ -54,13 +54,8 @@ public partial class ObjectPool<T> : SimplePool<T> where T : GodotObject, new()
 			return @object;
 		}
 
-		public bool PoolIsAvailable(T @object)
-		{
-			return IsInstanceValid(@object) && _handler.ObjectIsAvailable(@object);
-		}
-
-		public void PoolDestroy(T _)
-		{
+		public bool PoolIsAvailable(T @object) {
+			return GodotObject.IsInstanceValid(@object) && _handler.ObjectIsAvailable(@object);
 		}
 	}
 }
