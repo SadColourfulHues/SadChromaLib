@@ -1,17 +1,18 @@
 using Godot;
+using System;
 
 namespace SadChromaLib.Utils.Timing;
 
-/// <summary> An object that represents an activity that will be started in the future. </summary>
-public sealed partial class ScheduleAction : RefCounted, ITimedActivity
+/// <summary> A struct that represents an activity that will be started in the future. </summary>
+public struct ScheduleAction: ITimedActivity
 {
-	[Signal]
-	public delegate void CompletionEventHandler();
+	public event Action OnCompleted;
 
-	private float _seconds;
+	float _seconds;
 
 	/// <summary> Creates a new timed action object. (Note: do not use this constructor, instead use the TimingController's AddTask method to schedule activities.) </summary>
 	public ScheduleAction(float seconds)
+		: this()
 	{
 		_seconds = seconds;
 	}
@@ -25,7 +26,7 @@ public sealed partial class ScheduleAction : RefCounted, ITimedActivity
 			return false;
 
 		// Start associated activity
-		EmitSignal(SignalName.Completion);
+		OnCompleted?.Invoke();
 		return true;
 	}
 }

@@ -10,7 +10,7 @@ public interface ITimedActivity
 }
 
 /// <summary> An object that handles scheduling-related tasks. </summary>
-public sealed partial class TimingController: RefCounted
+public sealed partial class TimingController
 {
 	private const int ErrorNoSlots = -1;
 
@@ -32,7 +32,7 @@ public sealed partial class TimingController: RefCounted
 		ReadOnlySpan<ITimedActivity> actions = _actions;
 
 		for (int i = 0; i < _maxScheduledActions; ++ i) {
-			if (actions[i] != null)
+			if (actions[i] is not null)
 				continue;
 
 			return i;
@@ -46,11 +46,11 @@ public sealed partial class TimingController: RefCounted
 	/// <summary> Returns the total number of active tasks in the scheduler. </summary>
 	public int GetNumActiveTasks()
 	{
-		ReadOnlySpan<ITimedActivity> actions = _actions;
+		ReadOnlySpan<ITimedActivity> actions = _actions.AsSpan();
 		int count = 0;
 
 		for (int i = 0; i < _maxScheduledActions; ++ i) {
-			if (actions[i] == null)
+			if (actions[i] is null)
 				continue;
 
 			count ++;
@@ -60,15 +60,9 @@ public sealed partial class TimingController: RefCounted
 	}
 
 	/// <summary> Runs the controller's task evaluation process. </summary>
-	public void Evaluate(double delta)
-	{
-		Evaluate((float) delta);
-	}
-
-	/// <summary> Runs the controller's task evaluation process. </summary>
 	public void Evaluate(float delta)
 	{
-		ReadOnlySpan<ITimedActivity> actions = _actions;
+		ReadOnlySpan<ITimedActivity> actions = _actions.AsSpan();
 
 		// Evaluate tasks in the controller's backlog
 		for (int i = 0; i < _maxScheduledActions; ++ i) {
@@ -79,8 +73,13 @@ public sealed partial class TimingController: RefCounted
 		}
 	}
 
+	/// <summary> Runs the controller's task evaluation process. </summary>
+	public void Evaluate(double delta) {
+		Evaluate((float) delta);
+	}
+
 	/// <summary> Schedules a new delta-bound task
-	public bool AddTask(float seconds, ScheduleAction.CompletionEventHandler callback)
+	public bool AddTask(float seconds, Action callback)
 	{
 		int slot = FindAvailableSlot();
 
@@ -89,14 +88,14 @@ public sealed partial class TimingController: RefCounted
 			return false;
 
 		ScheduleAction action = new(seconds);
-		action.Completion += callback;
+		action.OnCompleted += callback;
 
 		_actions[slot] = action;
 		return true;
 	}
 
 	/// <summary> Schedules a new task bound to a real-time scheduled task
-	public bool AddTaskRealtime(float seconds, ScheduleActionRealTime.CompletionEventHandler callback)
+	public bool AddTaskRealtime(float seconds, Action callback)
 	{
 		int slot = FindAvailableSlot();
 
@@ -104,7 +103,7 @@ public sealed partial class TimingController: RefCounted
 			return false;
 
 		ScheduleActionRealTime action = new(seconds);
-		action.Completion += callback;
+		action.OnCompleted += callback;
 
 		_actions[slot] = action;
 		return true;

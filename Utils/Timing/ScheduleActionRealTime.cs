@@ -1,18 +1,19 @@
 using Godot;
+using System;
 
 namespace SadChromaLib.Utils.Timing;
 
-/// <summary> An object that represents an activity that will be started in the future. </summary>
-public sealed partial class ScheduleActionRealTime : RefCounted, ITimedActivity
+/// <summary> A struct that represents an activity that will be started in the future. </summary>
+public struct ScheduleActionRealTime: ITimedActivity
 {
-	[Signal]
-	public delegate void CompletionEventHandler();
+	public event Action OnCompleted;
 
-	private ulong _startTime;
-	private float _seconds;
+	ulong _startTime;
+	float _seconds;
 
 	/// <summary> Creates a new timed action object. (Note: do not use this constructor, instead use the TimingController's AddTaskRealtime method to schedule activities.) </summary>
 	public ScheduleActionRealTime(float seconds)
+		: this()
 	{
 		_seconds = seconds;
 		_startTime = Time.GetTicksMsec();
@@ -26,7 +27,7 @@ public sealed partial class ScheduleActionRealTime : RefCounted, ITimedActivity
 		if (currentSecs < _seconds)
 			return false;
 
-		EmitSignal(SignalName.Completion);
+		OnCompleted?.Invoke();
 		return true;
 	}
 }
