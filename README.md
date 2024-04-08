@@ -1,5 +1,5 @@
 # SadChromaLib
-The super-module of SadChromaLib. It implements a variety of commonly-used features in game development. Its design is based partially from my 'Lumbra' module, but adapted to Godot 4.2.
+The supermodule of SadChromaLib. It implements a variety of commonly-used features in game development. Its design is based partially from my 'Lumbra' module, but adapted to Godot 4.2.
 
 ## Core Modules
 
@@ -17,21 +17,24 @@ The super-module of SadChromaLib. It implements a variety of commonly-used featu
 ## Optional Modules
 These modules offer commonly-used functions in game-dev, but may not be needed in some projects.
 
-### [SadChromaLib.AI](https://github.com/SadColourfulHues/AI)
--> A module implementing AI components for in-game entities. It currently offers support for behaviour node and state machine controllers.
-
-### [SadChromaLib.Animation](https://github.com/SadColourfulHues/Animation)
--> A module implementing helper classes for in-game animation.
-
 ### [SadChromaLib.UI](https://github.com/SadColourfulHues/UI)
 -> A module implementing common user-interface elements.
 
-*(This submodule can be used without needing the base SadChromaLib module!)*
+*(This submodule can be used without needing the supermodule!)*
+
+### [SadChromaLib.Audio](https://github.com/SadColourfulHues/Audio)
+-> A module implementing common audio playback functionality.
+
+### [SadChromaLib.Animation](https://github.com/SadColourfulHues/Animation)
+-> A module implementing helper classes for in-game animation
+
+### [SadChromaLib.AI](https://github.com/SadColourfulHues/AI)
+-> A module implementing AI components for in-game entities. It currently offers support for   behaviour node and state machine controllers.
 
 ----
 
 ## Specialisation Submodules
--> These submodules implements case-specific functionality that isn't required by every game.
+These submodules implements case-specific functionality that isn't required by every game.
 
 ### [SadChromaLib.Specialisations.Inventory](https://github.com/SadColourfulHues/Inventory):
 -> A submodule implementing inventory and crafting functionality.
