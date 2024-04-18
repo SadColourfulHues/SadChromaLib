@@ -26,6 +26,13 @@ public struct TimeSinceObserver
         _startTime = Time.GetTicksMsec();
     }
 
+    /// <summary> Start measuring time from this point onwards, while also updating the target elapsed time. </summary>
+    public void Reset(float targetElapsedTime)
+    {
+        _targetElapsedTime = targetElapsedTime;
+        _startTime = Time.GetTicksMsec();
+    }
+
     /// <summary> How much time has passed since the last 'Reset' method was called? (Returns elapsed time in seconds.) </summary>
     public readonly float TimeSince()
     {
