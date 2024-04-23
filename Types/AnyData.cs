@@ -108,7 +108,7 @@ public struct AnyData
         X = v.R;
         Y = v.G;
         Z = v.B;
-        A = (byte) Mathf.Floor(255f * v.A);
+        A = (byte) MathF.Floor(255f * v.A);
 
         DataType = Type.Colour;
     }

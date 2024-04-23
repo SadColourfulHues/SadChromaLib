@@ -207,7 +207,7 @@ public sealed class PersistenceWriter: IDisposable
         _writer.Write(colour.R);
         _writer.Write(colour.G);
         _writer.Write(colour.B);
-        _writer.Write((byte) Mathf.Floor(colour.A * 255f));
+        _writer.Write((byte) MathF.Floor(colour.A * 255f));
     }
 
     #endregion

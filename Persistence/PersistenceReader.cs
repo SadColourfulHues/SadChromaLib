@@ -162,24 +162,24 @@ public sealed class PersistenceReader: IDisposable
         return data;
     }
 
-    /// <summary> [zero-alloc] Reads the next bytes as an array of AnyData</summary>
+    /// <summary> [reuse] Reads the next bytes as an array of AnyData</summary>
     public void ReadAnyArray(Span<AnyData> data) => ReadGenericArrayNoAlloc(ReadAny, data);
-    /// <summary> [zero-alloc] Reads the next bytes as an array of booleans</summary>
+    /// <summary> [reuse] Reads the next bytes as an array of booleans</summary>
     public void ReadBoolArray(Span<bool> data) => ReadGenericArrayNoAlloc(_reader.ReadBoolean, data);
-    /// <summary> [zero-alloc] Reads the next bytes as an array of integers</summary>
+    /// <summary> [reuse] Reads the next bytes as an array of integers</summary>
     public void ReadIntArray(Span<int> data) => ReadGenericArrayNoAlloc(_reader.ReadInt32, data);
-    /// <summary> [zero-alloc] Reads the next bytes as an array of float</summary>
+    /// <summary> [reuse] Reads the next bytes as an array of float</summary>
     public void ReadFloatArray(Span<float> data) => ReadGenericArrayNoAlloc(_reader.ReadSingle, data);
-    /// <summary> [zero-alloc] Reads the next bytes as an array of Vector2</summary>
+    /// <summary> [v] Reads the next bytes as an array of Vector2</summary>
     public void ReadVec2Array(Span<Vector2> data) => ReadGenericArrayNoAlloc(ReadVec2, data);
-    /// <summary> [zero-alloc] Reads the next bytes as an array of Vector3</summary>
+    /// <summary> [reuse] Reads the next bytes as an array of Vector3</summary>
     public void ReadVec3Array(Span<Vector3> data) => ReadGenericArrayNoAlloc(ReadVec3, data);
-    /// <summary> [zero-alloc] Reads the next bytes as an array of colours</summary>
+    /// <summary> [reuse] Reads the next bytes as an array of colours</summary>
     public void ReadColourArray(Span<Color> data) => ReadGenericArrayNoAlloc(ReadColour, data);
-    /// <summary> [zero-alloc, no null checking] Deserialises a component. </summary>
+    /// <summary> [reuse, no null checking] Deserialises a component. </summary>
     public void ReadToComponent(ISerialisableComponent component) => component.Deserialise(this);
 
-    /// <summary> [zero-alloc, no null checking] Deserialises an array of components.</summary>
+    /// <summary> [reuse, no null checking] Deserialises an array of components.</summary>
     public void ReadToComponents<T>(ReadOnlySpan<T> components)
         where T: ISerialisableComponent
     {
@@ -196,7 +196,7 @@ public sealed class PersistenceReader: IDisposable
         }
     }
 
-    /// <summary> [zero-alloc, no null checking] Deserialises an array of components.</summary>
+    /// <summary> [reuse, no null checking] Deserialises an array of components.</summary>
     public void ReadToComponents<T>(T[] components)
         where T: ISerialisableComponent
     {
@@ -213,7 +213,7 @@ public sealed class PersistenceReader: IDisposable
         }
     }
 
-    /// <summary> [zero-alloc, no null checking] Reads the next bytes as a set of strings.</summary>
+    /// <summary> [reuse, no null checking] Reads the next bytes as a set of strings.</summary>
     public void ReadStringSet(HashSet<string> set)
     {
         if (ReadTestIdentifier('H'))
@@ -230,7 +230,7 @@ public sealed class PersistenceReader: IDisposable
         }
     }
 
-    /// <summary> [zero-alloc, no null checking] Reads the next bytes as a SCHLib data dictionary. </summary>
+    /// <summary> [reuse, no null checking] Reads the next bytes as a SCHLib data dictionary. </summary>
     public void ReadDataDict(DataDict data)
     {
         if (!ReadTestIdentifier('%'))
