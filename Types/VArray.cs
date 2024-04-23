@@ -3,6 +3,8 @@ using Godot;
 using System;
 using System.Diagnostics;
 
+using SadChromaLib.Utils.Convenience;
+
 namespace SadChromaLib.Types;
 
 /// <summary>
@@ -356,6 +358,31 @@ public sealed class VArray<T>
     /// <returns></returns>
     public ReadOnlySpan<T?> AsSpan() {
         return _data.AsSpan();
+    }
+
+    /// <summary>
+    /// Returns a rented array filled with its valid entries.
+    /// Don't forget to call RentedArray.Dispose() once you're done using it!
+    /// </summary>
+    /// <returns></returns>
+    public RentedArray<T> ToEntriesArray() {
+        int count = Count;
+
+        RentedArray<T> entries = new(count);
+        int entryIdx = 0;
+
+        for (int i = 0; i < MaxCapacity; ++i) {
+            if (entryIdx >= count)
+                break;
+
+            if (_data[i] is null)
+                continue;
+
+            entries[entryIdx] = _data[i].Value;
+            entryIdx ++;
+        }
+
+        return entries;
     }
 
     #endregion

@@ -1,4 +1,3 @@
-using Godot;
 using System;
 
 namespace SadChromaLib.Utils.Timing;
@@ -8,23 +7,21 @@ public struct ScheduleActionRealTime: ITimedActivity
 {
 	public event Action OnCompleted;
 
-	ulong _startTime;
-	float _seconds;
+	double _startSecs;
+	double _seconds;
 
 	/// <summary> Creates a new timed action object. (Note: do not use this constructor, instead use the TimingController's AddTaskRealtime method to schedule activities.) </summary>
-	public ScheduleActionRealTime(float seconds)
+	public ScheduleActionRealTime(double seconds)
 		: this()
 	{
 		_seconds = seconds;
-		_startTime = Time.GetTicksMsec();
+		_startSecs = TimingUtils.GetTicksSecs();
 	}
 
 	/// <summary> Calculates the total time elapsed since it was created. (Note: this method should only be called by a TimingController object.) </summary>
 	public bool Evaluate(float delta)
 	{
-		float currentSecs = (Time.GetTicksMsec() - _startTime) * 0.001f;
-
-		if (currentSecs < _seconds)
+		if (TimingUtils.SecsSince(_startSecs) < _seconds)
 			return false;
 
 		OnCompleted?.Invoke();

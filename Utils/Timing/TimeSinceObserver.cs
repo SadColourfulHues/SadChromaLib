@@ -1,47 +1,66 @@
-using Godot;
-
 namespace SadChromaLib.Utils.Timing;
 
-/// <summary> A TimeSinceObserver is a utility object that can be used to measure the time since an action was started. Useful for things like hold confirmation.</summary>
+/// <summary> A utility object that can be used for measuring the time since an action was started. Useful for things like debouncers and hold confirmation timers.</summary>
 public struct TimeSinceObserver
 {
-    private ulong _startTime;
-    private float _targetElapsedTime;
+    private long _startTicks;
+    private double _targetElapsedTime;
 
-    public TimeSinceObserver(float targetElapsedTime = 1.0f)
+    public TimeSinceObserver(double targetElapsedTime = 1.0)
     {
-        _startTime = 0;
+        _startTicks = 0;
         _targetElapsedTime = targetElapsedTime;
     }
 
+    #region Main Functions
+
     /// <summary> Updates the observer's elapsed time target </summary>
-    public void SetTargetElapsedTime(float targetElapsedTime)
-    {
+    public void SetTargetElapsedTime(float targetElapsedTime) {
         _targetElapsedTime = targetElapsedTime;
     }
 
     /// <summary> Start measuring time from this point onwards. </summary>
-    public void Reset()
-    {
-        _startTime = Time.GetTicksMsec();
+    public void Reset() {
+        _startTicks = TimingUtils.GetTicks();
     }
 
     /// <summary> Start measuring time from this point onwards, while also updating the target elapsed time. </summary>
     public void Reset(float targetElapsedTime)
     {
+        _startTicks = TimingUtils.GetTicks();
         _targetElapsedTime = targetElapsedTime;
-        _startTime = Time.GetTicksMsec();
     }
 
     /// <summary> How much time has passed since the last 'Reset' method was called? (Returns elapsed time in seconds.) </summary>
-    public readonly float TimeSince()
-    {
-        return (Time.GetTicksMsec() - _startTime) * 0.001f;
+    public readonly double TimeSinceSecs()
+        => TimingUtils.SecsSince(_startTicks);
+
+    /// <summary> How much time has passed since the last 'Reset' method was called? (Returns elapsed time in milliseconds.) </summary>
+    public readonly double TimeSinceMsecs()
+        => TimingUtils.MsecsSince(_startTicks);
+
+    /// <summary> How much time has passed since the last 'Reset' method was called? (Returns elapsed time in nanoseconds.) </summary>
+    public readonly long TimeSinceNsecs()
+        => TimingUtils.NsecsSince(_startTicks);
+
+    #endregion
+
+    #region Elapsed Checks
+
+    /// <summary> Has the elapsed time passed the target value? (in seconds) </summary>
+    public readonly bool HasElapsed() {
+        return TimingUtils.SecsSince(_startTicks * TimingUtils.SecsFac) >= _targetElapsedTime;
     }
 
-    /// <summary> Has the elapsed time passed the target value? </summary>
-    public readonly bool HasElapsed()
-    {
-        return TimeSince() >= _targetElapsedTime;
+    /// <summary> Has the elapsed time passed the target value? (in milliseconds) </summary>
+    public readonly bool HasElapsedMsecs() {
+        return TimingUtils.MsecsSince(_startTicks * TimingUtils.MsecsFac) >= _targetElapsedTime;
     }
+
+    /// <summary> Has the elapsed time passed the target value? (in milliseconds) </summary>
+    public readonly bool HasElapsedNsecs() {
+        return TimingUtils.NsecsSince(_startTicks * 100) >= _targetElapsedTime;
+    }
+
+    #endregion
 }
