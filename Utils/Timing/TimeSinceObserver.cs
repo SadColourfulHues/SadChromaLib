@@ -15,7 +15,7 @@ public struct TimeSinceObserver
     #region Main Functions
 
     /// <summary> Updates the observer's elapsed time target </summary>
-    public void SetTargetElapsedTime(float targetElapsedTime) {
+    public void SetTargetElapsedTime(double targetElapsedTime) {
         _targetElapsedTime = targetElapsedTime;
     }
 
@@ -25,7 +25,7 @@ public struct TimeSinceObserver
     }
 
     /// <summary> Start measuring time from this point onwards, while also updating the target elapsed time. </summary>
-    public void Reset(float targetElapsedTime)
+    public void Reset(double targetElapsedTime)
     {
         _startTicks = TimingUtils.GetTicks();
         _targetElapsedTime = targetElapsedTime;
