@@ -361,20 +361,35 @@ public sealed class VArray<T>
     }
 
     /// <summary>
+    /// Iterates through all the valid item entries in the array,
+    /// </summary>
+    /// <returns></returns>
+    public void ForEach(Action<int, T> processCallback)
+    {
+        for (int i = 0; i < MaxCapacity; ++i) {
+            if (_data[i] is null)
+                continue;
+
+            processCallback.Invoke(i, _data[i].Value);
+        }
+    }
+
+    /// <summary>
+    /// <para>
     /// Returns a rented array filled with its valid entries.
+    /// </para>
+    /// <para>
+    /// Use 'count' to delimit iterations on the array.
+    /// </para>
     /// Don't forget to call RentedArray.Dispose() once you're done using it!
     /// </summary>
     /// <returns></returns>
-    public RentedArray<T> ToEntriesArray() {
-        int count = Count;
-
-        RentedArray<T> entries = new(count);
+    public RentedArray<T> ToEntriesArray(out int count)
+    {
+        RentedArray<T> entries = new(MaxCapacity);
         int entryIdx = 0;
 
         for (int i = 0; i < MaxCapacity; ++i) {
-            if (entryIdx >= count)
-                break;
-
             if (_data[i] is null)
                 continue;
 
@@ -382,6 +397,7 @@ public sealed class VArray<T>
             entryIdx ++;
         }
 
+        count = entryIdx;
         return entries;
     }
 
