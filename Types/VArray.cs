@@ -6,10 +6,10 @@ using System.Diagnostics;
 namespace SadChromaLib.Types;
 
 /// <summary>
-/// A list-like collection that stores data in an internal array.
+/// A list-like collection that stores value-type data in an internal array.
 /// </summary>
 /// <value></value>
-public sealed class XArray<T>
+public sealed class VArray<T>
     where T: struct
 {
     readonly public int MaxCapacity;
@@ -20,7 +20,7 @@ public sealed class XArray<T>
     int _lastCount;
     bool _changed;
 
-    public XArray(int capacity)
+    public VArray(int capacity)
     {
         MaxCapacity = capacity;
 
@@ -104,7 +104,10 @@ public sealed class XArray<T>
 
         if (index == -1)
         {
-            GD.PrintErr("XArray::Add: no space for new item!");
+            #if TOOLS
+            GD.PrintErr("VArray::Add: no space for new item!");
+            #endif
+
             return false;
         }
 
@@ -248,15 +251,18 @@ public sealed class XArray<T>
     /// </summary>
     /// <param name="destination">The array to transfer data to.</param>
     /// <param name="start">At which index should it start overwriting data.</param>
-    public void Copy(XArray<T> destination, int start = 0)
+    public void Copy(VArray<T> destination, int start = 0)
     {
         Debug.Assert(
             condition: start >= 0,
-            message: "XArray::Copy: 'start' must be a positive integer!"
+            message: "VArray::Copy: 'start' must be a positive integer!"
         );
 
         if (destination.MaxCapacity < (start + MaxCapacity)) {
-            GD.PrintErr("XArray: target array cannot hold data.");
+            #if TOOLS
+            GD.PrintErr("VArray: target array cannot hold data.");
+            #endif
+
             return;
         }
 
@@ -271,11 +277,11 @@ public sealed class XArray<T>
     /// Transfers as much data to another array without overwriting its data.
     /// </summary>
     /// <param name="destination">The target array to transfer data to.</param>
-    public void Transfer(XArray<T> destination, int start = 0)
+    public void Transfer(VArray<T> destination, int start = 0)
     {
         Debug.Assert(
             condition: start >= 0,
-            message: "XArray::Transfer: 'start' must be a positive integer!"
+            message: "VArray::Transfer: 'start' must be a positive integer!"
         );
 
         int trueIndex;
@@ -327,7 +333,7 @@ public sealed class XArray<T>
     public int ToArray(ref T[] array) {
         Debug.Assert(
             condition: array.Length >= MaxCapacity,
-            message: "XArray:ToArrayNonAlloc: target array is not capable of storing the list's data."
+            message: "VArray:ToArrayNonAlloc: target array is not capable of storing the list's data."
         );
 
         ReadOnlySpan<T?> data = _data.AsSpan();

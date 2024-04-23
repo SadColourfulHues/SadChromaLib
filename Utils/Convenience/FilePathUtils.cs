@@ -25,6 +25,7 @@ public static class FilePathUtils
         return ProjectSettings.GlobalizePath(godotUrl);
     }
 
+    #if TOOLS
     /// <summary>
     /// (Editor Tools only!) Returns the path to the project's root directory
     /// </summary>
@@ -33,6 +34,7 @@ public static class FilePathUtils
     public static string GetProjectPath() {
         return ProjectSettings.GlobalizePath("res://");
     }
+    #endif
 
     /// <summary>
     /// Returns the path to the user's root data directory
@@ -76,6 +78,27 @@ public static class FilePathUtils
 	public static string GetSaveFilePath(string saveName, string fileName) {
 		return Path.Combine(OS.GetUserDataDir(), "SaveData", saveName, fileName);
 	}
+
+    #endregion
+
+    #region Check Utils
+
+    /// <summary>
+	/// Returns true if a specified save dir exists
+	/// </summary>
+	/// <returns></returns>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static bool SaveDirExists(string saveName) {
+        return Directory.Exists(GetSaveDirPath(saveName));
+    }
+
+    /// <summary>
+    /// Returns true if a specified persistence file exists in a save data directory
+    /// </summary>
+    /// <returns></returns>
+    public static bool PersistenceFileExists(string saveName, string fileName) {
+        return Directory.Exists(GetSaveFilePath(saveName, fileName));
+    }
 
     #endregion
 }

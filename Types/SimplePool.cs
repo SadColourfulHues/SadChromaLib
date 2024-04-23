@@ -77,7 +77,10 @@ public partial class SimplePool<T>
 		// If no slots were marked,
 		// we can assume that the pool can no longer hold any more objects
 		if (firstAvailable == null) {
+			#if TOOLS
 			GD.PrintErr("SimplePool: pool can no longer contain any more data!");
+			#endif
+
 			return null;
 		}
 
