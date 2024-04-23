@@ -31,6 +31,9 @@ These modules offer commonly-used functions in game-dev, but may not be needed i
 ### [SadChromaLib.AI](https://github.com/SadColourfulHues/AI)
 -> A module implementing AI components for in-game entities. It currently offers support for   behaviour node and state machine controllers.
 
+### [SadChromaLib.Input](https://github.com/SadColourfulHues/Input)
+-> A module implementing helper classes to help with common input processing tasks.
+
 ----
 
 ## Specialisation Submodules
