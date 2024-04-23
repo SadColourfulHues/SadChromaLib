@@ -33,15 +33,15 @@ public struct TimeSinceObserver
 
     /// <summary> How much time has passed since the last 'Reset' method was called? (Returns elapsed time in seconds.) </summary>
     public readonly double TimeSinceSecs()
-        => TimingUtils.SecsSince(_startTicks);
+        => TimingUtils.SecsSince(_startTicks * TimingUtils.SecsFac);
 
     /// <summary> How much time has passed since the last 'Reset' method was called? (Returns elapsed time in milliseconds.) </summary>
     public readonly double TimeSinceMsecs()
-        => TimingUtils.MsecsSince(_startTicks);
+        => TimingUtils.MsecsSince(_startTicks * TimingUtils.MsecsFac);
 
     /// <summary> How much time has passed since the last 'Reset' method was called? (Returns elapsed time in nanoseconds.) </summary>
     public readonly long TimeSinceNsecs()
-        => TimingUtils.NsecsSince(_startTicks);
+        => TimingUtils.NsecsSince(_startTicks * 100);
 
     #endregion
 
