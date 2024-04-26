@@ -38,7 +38,7 @@ public readonly struct RentedArray<T>: IDisposable
         set => _items[key] = value;
     }
 
-    public readonly ArraySegment<T> this[Range range]
+    public readonly ArraySegment<T> this[System.Range range]
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => Slice(range.Start.Value, range.End.Value);
