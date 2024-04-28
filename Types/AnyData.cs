@@ -386,4 +386,14 @@ public struct AnyData
     }
 
     #endregion
+
+    #region Empty Data
+
+    public static AnyData Empty = new() { DataType = Type.Unknown };
+
+    public bool IsEmpty() {
+        return DataType == Type.Unknown;
+    }
+
+    #endregion
 }
