@@ -20,7 +20,7 @@ public struct FrameDependentTimeSinceObserver
 
     public FrameDependentTimeSinceObserver(float targetElapsedTime = 0.0f)
     {
-        _frameTime = 0.0f;
+        _frameTime = targetElapsedTime;
         _targetElapsedTime = targetElapsedTime;
     }
 
