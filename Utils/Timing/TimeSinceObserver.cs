@@ -1,6 +1,9 @@
 namespace SadChromaLib.Utils.Timing;
 
-/// <summary> A utility object that can be used for measuring the time since an action was started. Useful for things like debouncers and hold confirmation timers.</summary>
+/// <summary>
+/// A utility object that can be used for measuring how much (system) time has elapsed
+/// since an action was started. Useful for things like debouncers and hold confirmation timers.
+/// </summary>
 public struct TimeSinceObserver
 {
     private long _startTicks;
@@ -13,11 +16,6 @@ public struct TimeSinceObserver
     }
 
     #region Main Functions
-
-    /// <summary> Updates the observer's elapsed time target </summary>
-    public void SetTargetElapsedTime(double targetElapsedTime) {
-        _targetElapsedTime = targetElapsedTime;
-    }
 
     /// <summary> Start measuring time from this point onwards. </summary>
     public void Reset() {
